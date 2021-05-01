@@ -34,7 +34,7 @@ const drawSvg = () => {
       "tspan"
     );
     tspan.setAttribute("x", options.width / 2);
-    tspan.setAttribute("dy", "1.5em");
+    tspan.setAttribute("dy", "1.25em");
     tspan.textContent = line;
     text.appendChild(tspan);
   });
@@ -63,19 +63,28 @@ const updateSvg = (e) => {
   switch (e.target.name) {
     case "bg-color":
       options.bgColor = e.target.value;
-      drawSvg(options);
       break;
     case "text-color":
       options.textColor = e.target.value;
-      drawSvg(options);
       break;
     case "text":
       options.text = e.target.value.split("\n");
-      drawSvg(options);
       break;
+    case "width": {
+      options.width = e.target.value;
+      break;
+    }
+    case "height": {
+      options.height = e.target.value;
+      break;
+    }
+    case "font-size": {
+      options.fontSize = `${e.target.value}em`;
+    }
     default:
       console.log("default case");
   }
+  drawSvg();
 };
 
 inputs.forEach((input) => input.addEventListener("change", updateSvg));
