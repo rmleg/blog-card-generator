@@ -34,7 +34,7 @@ const drawSvg = () => {
       "tspan"
     );
     tspan.setAttribute("x", options.width / 2);
-    tspan.setAttribute("dy", "1em");
+    tspan.setAttribute("dy", "1.5em");
     tspan.textContent = line;
     text.appendChild(tspan);
   });
@@ -42,7 +42,7 @@ const drawSvg = () => {
   text.setAttribute("fill", options.textColor);
   text.setAttribute("font-size", options.fontSize);
   text.setAttribute("x", options.width / 2);
-  text.setAttribute("y", options.height / 2 - options.fontSize);
+  text.setAttribute("y", options.height / 2);
   text.setAttribute("text-anchor", "middle");
   text.setAttribute("dominant-baseline", "middle");
 
