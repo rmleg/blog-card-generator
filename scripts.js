@@ -9,6 +9,7 @@ let options = {
   text: ["Your Text Here"],
   bgColor: "#632b30",
   textColor: "#fefefe",
+  fontSize: "2em",
 };
 
 const initSvg = () => {
@@ -37,9 +38,11 @@ const drawSvg = () => {
     tspan.textContent = line;
     text.appendChild(tspan);
   });
+  text.firstChild.setAttribute("dy", "0.5em");
   text.setAttribute("fill", options.textColor);
+  text.setAttribute("font-size", options.fontSize);
   text.setAttribute("x", options.width / 2);
-  text.setAttribute("y", options.height / 2);
+  text.setAttribute("y", options.height / 2 - options.fontSize);
   text.setAttribute("text-anchor", "middle");
   text.setAttribute("dominant-baseline", "middle");
 
@@ -55,25 +58,6 @@ const drawSvg = () => {
 };
 
 drawSvg();
-
-/* const paintCanvas = (options) => {
-  // background
-  context.fillStyle = options.bgColor;
-  context.fillRect(0, 0, width, height);
-
-  // text
-  context.fillStyle = options.textColor;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(options.text, width / 2, height / 2);
-}; */
-
-/* const paintText = (options) => {
-  context.fillStyle = color;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(text, width / 2, height / 2);
-}; */
 
 const updateSvg = (e) => {
   switch (e.target.name) {
@@ -95,9 +79,3 @@ const updateSvg = (e) => {
 };
 
 inputs.forEach((input) => input.addEventListener("change", updateSvg));
-
-/* canvas.width = width;
-canvas.height = height; */
-
-/* context.fillStyle = "#632b30";
-context.fillRect(0, 0, width, height); */
