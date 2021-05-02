@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Generate a Blog Header</title>
+  </head>
+  <body>
+    <main>
+      <div class="svg"></div>
+      <section class="inputs">
+        <fieldset>
+          <legend>Settings for Your Card</legend>
+          <fieldset>
+            <legend>Font Type</legend>
+            <input
+              type="radio"
+              name="font-type"
+              id="font-type-display"
+              value="display"
+              checked
+            />
+            <label for="font-type-display" class="label-display">Display</label>
+
+            <input
+              type="radio"
+              name="font-type"
+              id="font-type-serif"
+              value="serif"
+            />
+            <label for="font-type-serif" class="label-serif">Serif</label>
+
+            <input
+              type="radio"
+              name="font-type"
+              id="font-type-sans-serif"
+              value="sans-serif"
+            />
+            <label for="font-type-sans-serif" class="label-sans-serif"
+              >Sans-Serif</label
+            >
+
+            <input
+              type="radio"
+              name="font-type"
+              id="font-type-handwriting"
+              value="handwriting"
+            />
+            <label for="font-type-handwriting" class="label-handwriting"
+              >Handwriting</label
+            >
+
+            <input
+              type="radio"
+              name="font-type"
+              id="font-type-monospace"
+              value="monospace"
+            />
+            <label for="font-type-monospace" class="label-monospace"
+              >Monospace</label
+            >
+          </fieldset>
+
+          <fielset id="font-family-radios">
+            <legend>Font Family</legend>
+          </fielset>
+
+          <div>
+            <label for="width">Width (px): </label>
+            <input type="number" id="width" value="300" min="0" name="width" />
+          </div>
+          <div>
+            <label for="height">Height (px): </label>
+            <input type="number" id="width" value="300" min="0" name="height" />
+          </div>
+          <div>
+            <label for="bg-color">Background color: </label>
+            <input type="color" id="bg-color" value="#632b30" name="bg-color" />
+          </div>
+          <div>
+            <label for="text-color">Text color: </label>
+            <input
+              type="color"
+              id="text-color"
+              value="#fefefe"
+              name="text-color"
+            />
+          </div>
+          <div>
+            <label for="font-size">Font size: </label>
+            <input
+              type="range"
+              id="font-size"
+              value="1"
+              name="font-size"
+              min="1"
+              max="10"
+            />
+          </div>
+          <div>
+            <p>
+              <label for="text">Enter text to display:</label>
+            </p>
+            <textarea
+              id="text"
+              value="Your Text Here"
+              placeholder="Your Text Here"
+              name="text"
+            ></textarea>
+          </div>
+        </fieldset>
+      </section>
+    </main>
+  </body>
+  <script src="scripts.js"></script>
+</html>

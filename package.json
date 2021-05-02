@@ -1,0 +1,27 @@
+{
+  "name": "blog-header-generator",
+  "version": "1.0.0",
+  "description": "Generate a blog header card",
+  "main": "scripts.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "browser-sync start --server --files \"*.css, *.html, *.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmleg/blog-card-generator.git"
+  },
+  "author": "Rachel Leggett",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rmleg/blog-card-generator/issues"
+  },
+  "homepage": "https://github.com/rmleg/blog-card-generator#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.14"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "node-static": "^0.7.11"
+  }
+}
