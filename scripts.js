@@ -80,6 +80,7 @@ const updateSvg = (e) => {
     }
     case "font-size": {
       options.fontSize = `${e.target.value}em`;
+      break;
     }
     default:
       console.log("default case");
@@ -88,3 +89,37 @@ const updateSvg = (e) => {
 };
 
 inputs.forEach((input) => input.addEventListener("change", updateSvg));
+
+// Get all Google fonts
+// filter for only serif fonts
+// filter for only sans-serif fonts
+// show only top 25 for each category
+// and add link refs for each of them so they can load in the dropdown in advance
+
+const getGoogleFonts = async () => {
+  const results = await fetch(
+    "https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=AIzaSyCTch8lhPKYVPNhRCi9US9P1TO8ra-c7zc"
+  );
+  return await results.json();
+};
+
+let allFonts = [];
+getGoogleFonts().then((data) => {
+  allFonts = data.items;
+  const fonts = {
+    serif: getTopFontsByCategory("serif"),
+    sansSerif: getTopFontsByCategory("sans-serif"),
+    handwriting: getTopFontsByCategory("handwriting"),
+    monospace: getTopFontsByCategory("monospace"),
+    display: getTopFontsByCategory("display"),
+  };
+  console.log(fonts);
+});
+
+getTopFontsByCategory = (category) => {
+  return allFonts
+    .filter((font) => {
+      return font.category === category;
+    })
+    .slice(0, 25);
+};
