@@ -12,7 +12,6 @@ const updateFonts = (fonts, fontType, element) => {
   element.innerHTML = "";
 
   // create and add new links and radios
-  // TODO: add checked attr to first radio
   fonts[fontType]?.forEach((font) => {
     // create links for head
     const href = `https://fonts.googleapis.com/css?family=${font.family
@@ -30,6 +29,9 @@ const updateFonts = (fonts, fontType, element) => {
     radio.name = "font-family";
     radio.value = font.family;
     radio.id = `font-family-${font.family.split(" ").join("-")}`;
+    if (element.childElementCount === 0) {
+      radio.checked = true;
+    }
     const label = document.createElement("label");
     label.setAttribute(
       "for",
@@ -45,7 +47,6 @@ const updateFonts = (fonts, fontType, element) => {
 let allFonts = [];
 getGoogleFonts().then((data) => {
   const svgContainer = document.querySelector(".svg");
-  // const context = canvas.getContext("2d");
 
   const inputs = document.querySelectorAll("input, textarea");
   const fontSelect = document.querySelector("#font-family-radios");
