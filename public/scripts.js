@@ -5,6 +5,43 @@ const getGoogleFonts = async () => {
   return await results.json();
 };
 
+const updateFonts = (fonts, fontType, element) => {
+  // clear old links and radios
+  const links = document.head.querySelectorAll("link[data-type=font]");
+  links.forEach((link) => link.remove());
+  element.innerHTML = "";
+
+  // create and add new links and radios
+  // TODO: add checked attr to first radio
+  fonts[fontType]?.forEach((font) => {
+    // create links for head
+    const href = `https://fonts.googleapis.com/css?family=${font.family
+      .split(" ")
+      .join("+")}`;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.setAttribute("data-type", "font");
+    document.head.appendChild(link);
+
+    // create radio buttons for form
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "font-family";
+    radio.value = font.family;
+    radio.id = `font-family-${font.family.split(" ").join("-")}`;
+    const label = document.createElement("label");
+    label.setAttribute(
+      "for",
+      `font-family-${font.family.split(" ").join("-")}`
+    );
+    label.textContent = font.family;
+    label.style.fontFamily = font.family;
+    element.appendChild(radio);
+    element.appendChild(label);
+  });
+};
+
 let allFonts = [];
 getGoogleFonts().then((data) => {
   const svgContainer = document.querySelector(".svg");
@@ -12,9 +49,20 @@ getGoogleFonts().then((data) => {
 
   const inputs = document.querySelectorAll("input, textarea");
   const fontSelect = document.querySelector("#font-family-radios");
+
   fontSelect.addEventListener("change", (e) => {
     if (e.target.value) {
       options.fontFamily = e.target.value;
+      drawSvg();
+    }
+  });
+
+  const fontTypeFieldset = document.querySelector(".font-types");
+  fontTypeFieldset.addEventListener("change", (e) => {
+    if (e.target.value) {
+      options.fontType = e.target.value;
+      options.fontFamily = fonts[e.target.value][0].family;
+      updateFonts(fonts, options.fontType, fontSelect);
       drawSvg();
     }
   });
@@ -30,6 +78,7 @@ getGoogleFonts().then((data) => {
   };
 
   allFonts = data.items;
+  console.log(allFonts);
   const fonts = {
     serif: getTopFontsByCategory("serif"),
     sansSerif: getTopFontsByCategory("sans-serif"),
@@ -41,29 +90,7 @@ getGoogleFonts().then((data) => {
   options.fontFamily = fonts.display[0].family;
   // build font api requests for each of the top Display fonts
   // and add them to the head
-  fonts.display.forEach((font) => {
-    const href = `https://fonts.googleapis.com/css?family=${font.family
-      .split(" ")
-      .join("+")}`;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = href;
-    document.head.appendChild(link);
-    const radio = document.createElement("input");
-    radio.type = "radio";
-    radio.name = "font-family";
-    radio.value = font.family;
-    radio.id = `font-family-${font.family.split(" ").join("-")}`;
-    const label = document.createElement("label");
-    label.setAttribute(
-      "for",
-      `font-family-${font.family.split(" ").join("-")}`
-    );
-    label.textContent = font.family;
-    label.style.fontFamily = font.family;
-    fontSelect.appendChild(radio);
-    fontSelect.appendChild(label);
-  });
+  updateFonts(fonts, "display", fontSelect);
 
   const initSvg = () => {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -151,7 +178,9 @@ getGoogleFonts().then((data) => {
 getTopFontsByCategory = (category) => {
   return allFonts
     .filter((font) => {
-      return font.category === category;
+      return (
+        font.category === category && font.family !== "Open Sans Condensed"
+      );
     })
     .slice(0, 25);
 };
