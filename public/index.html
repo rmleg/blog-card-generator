@@ -7,10 +7,11 @@
     <main>
       <div class="svg"></div>
       <section class="inputs">
+        <button type="button" class="download">Download Card as Image</button>
         <fieldset>
           <legend>Settings for Your Card</legend>
           <fieldset class="font-types">
-            <legend>Font Type</legend>
+            <legend>Font type</legend>
             <input
               type="radio"
               name="font-type"
@@ -59,21 +60,20 @@
             >
           </fieldset>
 
-          <fielset id="font-family-radios">
-            <legend>Font Family</legend>
+          <fieldset class="font-family-radios">
             <!-- font families dynamicall added here-->
-          </fielset>
+          </fieldset>
 
           <div>
-            <label for="width">Width (px): </label>
+            <label for="width">Card width (px): </label>
             <input type="number" id="width" value="300" min="0" name="width" />
           </div>
           <div>
-            <label for="height">Height (px): </label>
+            <label for="height">Card height (px): </label>
             <input type="number" id="width" value="300" min="0" name="height" />
           </div>
           <div>
-            <label for="bg-color">Background color: </label>
+            <label for="bg-color">Card background color: </label>
             <input type="color" id="bg-color" value="#632b30" name="bg-color" />
           </div>
           <div>

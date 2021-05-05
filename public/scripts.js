@@ -5,11 +5,21 @@ const getGoogleFonts = async () => {
   return await results.json();
 };
 
+// add a download button
+// when download button is clicked, draw svg to a new canvas element
+// (can the canvas be hidden?)
+// then download the canvas as an image
+
 const updateFonts = (fonts, fontType, element) => {
   // clear old links and radios
   const links = document.head.querySelectorAll("link[data-type=font]");
   links.forEach((link) => link.remove());
   element.innerHTML = "";
+
+  // re-add legend
+  const legend = document.createElement("legend");
+  legend.textContent = "Font family";
+  element.appendChild(legend);
 
   // create and add new links and radios
   fonts[fontType]?.forEach((font) => {
@@ -49,7 +59,7 @@ getGoogleFonts().then((data) => {
   const svgContainer = document.querySelector(".svg");
 
   const inputs = document.querySelectorAll("input, textarea");
-  const fontSelect = document.querySelector("#font-family-radios");
+  const fontSelect = document.querySelector(".font-family-radios");
 
   fontSelect.addEventListener("change", (e) => {
     if (e.target.value) {
@@ -173,7 +183,45 @@ getGoogleFonts().then((data) => {
     drawSvg();
   };
 
+  const downloadImage = async () => {
+    const svg = document.querySelector("svg");
+    const image = new Image();
+    // get svg data
+    const xml = new XMLSerializer().serializeToString(svg);
+
+    // make it base64
+    const svg64 = btoa(xml);
+    const b64Start = "data:image/svg+xml;base64,";
+
+    // prepend a "header"
+    const image64 = b64Start + svg64;
+
+    // set it as the source of the img element
+    image.src = image64;
+
+    // const imageBlob = await image.blob();
+    // const imageURL = URL.createObjectURL(imageBlob);
+
+    const link = document.createElement("a");
+    link.href = image.src;
+    link.download = "card";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // image.src = blobURL;
+    document.body.appendChild(image);
+    console.log(image);
+
+    //currently it downloads as an svg without the google font
+    //goal: download as a jpeg with the text as an image in the correct font
+    //the best option still seems like drawing the image to a canvas
+    //possible???
+  };
+
   inputs.forEach((input) => input.addEventListener("change", updateSvg));
+  const downloadButton = document.querySelector(".download");
+  downloadButton.addEventListener("click", downloadImage);
 });
 
 getTopFontsByCategory = (category) => {
