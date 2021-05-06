@@ -40,6 +40,8 @@ const updateFonts = (fonts, fontType, element) => {
     radio.value = font.family;
     radio.id = `font-family-${font.family.split(" ").join("-")}`;
     if (element.childElementCount === 0) {
+      // TODO: check if any radios exist in the element instead
+      // this is false because the legend is a child of the element
       radio.checked = true;
     }
     const label = document.createElement("label");
@@ -183,8 +185,53 @@ getGoogleFonts().then((data) => {
     drawSvg();
   };
 
+  const getBase64Font = async (fontFamily) => {
+    const response = await fetch(
+      `https://fonts.googleapis.com/css?family=${fontFamily
+        .split(" ")
+        .join("+")}`
+    );
+    const data = await response.text();
+    const fontLinkRegex = new RegExp(
+      /(https?:\/\/(fonts\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})\w/,
+      "ig"
+    );
+    const [woff] = data.match(fontLinkRegex);
+
+    const woffResponse = await fetch(woff);
+
+    const woffData = await woffResponse.text();
+
+    const contentType = woffResponse.headers.get("Content-Type");
+
+    const base64Data = `data:${contentType};charset=utf-8;base64,${btoa(
+      unescape(encodeURIComponent(woffData))
+    )}`;
+    console.log(base64Data);
+
+    /*
+@font-face {
+  font-family: 'Bebas Neue';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/bebasneue/v2/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Bebas Neue';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/bebasneue/v2/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+    */
+  };
+
   const downloadImage = async () => {
     const svg = document.querySelector("svg");
+
+    const base64Font = await getBase64Font(options.fontFamily);
+
     const image = new Image();
     // get svg data
     const xml = new XMLSerializer().serializeToString(svg);
@@ -202,7 +249,8 @@ getGoogleFonts().then((data) => {
     // const imageBlob = await image.blob();
     // const imageURL = URL.createObjectURL(imageBlob);
 
-    const link = document.createElement("a");
+    // start keep
+    /*     const link = document.createElement("a");
     link.href = image.src;
     link.download = "card";
     document.body.appendChild(link);
@@ -211,7 +259,8 @@ getGoogleFonts().then((data) => {
 
     // image.src = blobURL;
     document.body.appendChild(image);
-    console.log(image);
+    console.log(image); */
+    //end keep
 
     //currently it downloads as an svg without the google font
     //goal: download as a jpeg with the text as an image in the correct font
