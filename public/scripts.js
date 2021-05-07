@@ -107,6 +107,9 @@ getGoogleFonts().then((data) => {
 
   const initSvg = () => {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("version", "1.1");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    svg.setAttribute("xmlns-xlink", "http://www.w3.org/1999/xlink");
     svg.setAttribute("width", options.width);
     svg.setAttribute("height", options.height);
     svg.setAttribute("viewBox", `0 0 ${options.width} ${options.height}`);
@@ -207,59 +210,89 @@ getGoogleFonts().then((data) => {
     const base64Data = `data:${contentType};charset=utf-8;base64,${btoa(
       unescape(encodeURIComponent(woffData))
     )}`;
-    console.log(base64Data);
 
-    /*
-@font-face {
-  font-family: 'Bebas Neue';
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/bebasneue/v2/JTUSjIg69CK48gW7PXoo9WdhyyTh89ZNpQ.woff2) format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: 'Bebas Neue';
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/bebasneue/v2/JTUSjIg69CK48gW7PXoo9WlhyyTh89Y.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-    */
+    // console.log("data", data);
+    // also need the unicode-range part of data: https://lvngd.com/blog/how-embed-google-font-svg/
+    // switch to returning an object with base64 and the unicode range
+    return data.replace(woff, base64Data);
   };
 
   const downloadImage = async () => {
     const svg = document.querySelector("svg");
 
     const base64Font = await getBase64Font(options.fontFamily);
+    console.log("font", base64Font);
 
-    const image = new Image();
+    const defs = document.createElement("defs");
+    const style = document.createElement("style");
+    style.appendChild(document.createTextNode(base64Font));
+    // style.textContent = base64Font;
+    // style.textContent = base64Font.split("\n").join("");
+    defs.appendChild(style);
+    svg.insertBefore(defs, svg.firstChild);
+
+    /* const fontEmbedString = `
+    @font-face {
+      font-family: '${options.fontFamily}';
+      font-style: normal;
+      font-weight: 400;
+      src: url(${base64Font}) format('woff2')}`;
+
+    console.log(fontEmbedString);*/
+
     // get svg data
-    const xml = new XMLSerializer().serializeToString(svg);
+    const svgData = new XMLSerializer().serializeToString(svg);
 
-    // make it base64
-    const svg64 = btoa(xml);
-    const b64Start = "data:image/svg+xml;base64,";
+    // make svg base64
+    const image64 = `data:image/svg+xml;base64,${btoa(svgData)}`;
 
-    // prepend a "header"
-    const image64 = b64Start + svg64;
+    const svgImage = document.createElement("img");
+    svgImage.setAttribute("src", image64);
 
     // set it as the source of the img element
-    image.src = image64;
 
     // const imageBlob = await image.blob();
     // const imageURL = URL.createObjectURL(imageBlob);
 
     // start keep
-    /*     const link = document.createElement("a");
-    link.href = image.src;
+    const link = document.createElement("a");
+    link.href = svgImage.src;
     link.download = "card";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    // image.src = blobURL;
-    document.body.appendChild(image);
-    console.log(image); */
+    svgImage.onload = () => {
+      const canvas = document.querySelector("canvas");
+
+      const scaleFactor = window.devicePixelRatio;
+
+      canvas.width = options.width * scaleFactor;
+      canvas.height = options.height * scaleFactor;
+
+      canvas.style.width = `${options.width}px`;
+
+      const context = canvas.getContext("2d");
+      // draw image in canvas starting left-0 , top - 0
+      context.drawImage(
+        svgImage,
+        0,
+        0,
+        options.width * scaleFactor,
+        options.height * scaleFactor
+      );
+
+      document.body.appendChild(svgImage);
+
+      const jpeg = canvas.toDataURL("image/jpeg", 1.0);
+      const canvaslink = document.createElement("a");
+      canvaslink.download = "card from canvas";
+      document.body.appendChild(canvaslink);
+      canvaslink.href = jpeg;
+      canvaslink.click();
+      canvaslink.remove();
+    };
+
     //end keep
 
     //currently it downloads as an svg without the google font
