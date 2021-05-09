@@ -1,3 +1,12 @@
+/**TODO for MVP:
+ * env variable
+ * DELETE old api key, get a new one (because I committed it lol)
+ * design
+ *
+ * TODO for future:
+ * accessibility guidelines/hints re contrast, alt text
+ */
+
 const getGoogleFonts = async () => {
   const results = await fetch(
     "https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=AIzaSyCTch8lhPKYVPNhRCi9US9P1TO8ra-c7zc"
@@ -78,7 +87,7 @@ getGoogleFonts().then((data) => {
     width: 300,
     height: 300,
     text: ["Your Text Here"],
-    bgColor: "#632b30",
+    bgColor: "#47304F",
     textColor: "#fefefe",
     fontSize: "2em",
     fontType: "display",
