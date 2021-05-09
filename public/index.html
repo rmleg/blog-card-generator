@@ -4,11 +4,11 @@
     <title>Generate a Blog Header</title>
   </head>
   <body>
-    <canvas></canvas>
     <main>
       <div class="svg"></div>
       <section class="inputs">
-        <button type="button" class="download">Download Card as Image</button>
+        <button type="button" class="download-jpg">Download Card as JPG</button>
+        <button type="button" class="download-svg">Download Card as SVG</button>
         <fieldset>
           <legend>Settings for Your Card</legend>
           <fieldset class="font-types">
@@ -16,17 +16,9 @@
             <input
               type="radio"
               name="font-type"
-              id="font-type-display"
-              value="display"
-              checked
-            />
-            <label for="font-type-display" class="label-display">Display</label>
-
-            <input
-              type="radio"
-              name="font-type"
               id="font-type-serif"
               value="serif"
+              checked
             />
             <label for="font-type-serif" class="label-serif">Serif</label>
 
@@ -59,6 +51,14 @@
             <label for="font-type-monospace" class="label-monospace"
               >Monospace</label
             >
+
+            <input
+              type="radio"
+              name="font-type"
+              id="font-type-display"
+              value="display"
+            />
+            <label for="font-type-display" class="label-display">Display</label>
           </fieldset>
 
           <fieldset class="font-family-radios">

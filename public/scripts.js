@@ -5,11 +5,6 @@ const getGoogleFonts = async () => {
   return await results.json();
 };
 
-// add a download button
-// when download button is clicked, draw svg to a new canvas element
-// (can the canvas be hidden?)
-// then download the canvas as an image
-
 const updateFonts = (fonts, fontType, element) => {
   // clear old links and radios
   const links = document.head.querySelectorAll("link[data-type=font]");
@@ -39,9 +34,8 @@ const updateFonts = (fonts, fontType, element) => {
     radio.name = "font-family";
     radio.value = font.family;
     radio.id = `font-family-${font.family.split(" ").join("-")}`;
-    if (element.childElementCount === 0) {
-      // TODO: check if any radios exist in the element instead
-      // this is false because the legend is a child of the element
+    if (element.childElementCount === 1) {
+      // if only a legend exists in the fieldset, this is the first radio
       radio.checked = true;
     }
     const label = document.createElement("label");
@@ -91,7 +85,6 @@ getGoogleFonts().then((data) => {
   };
 
   allFonts = data.items;
-  console.log(allFonts);
   const fonts = {
     serif: getTopFontsByCategory("serif"),
     sansSerif: getTopFontsByCategory("sans-serif"),
@@ -99,11 +92,11 @@ getGoogleFonts().then((data) => {
     monospace: getTopFontsByCategory("monospace"),
     display: getTopFontsByCategory("display"),
   };
-  // set default font to most popular display font
-  options.fontFamily = fonts.display[0].family;
-  // build font api requests for each of the top Display fonts
+  // set default font to most popular serif font
+  options.fontFamily = fonts.serif[0].family;
+  // build font api requests for each of the top Serif fonts
   // and add them to the head
-  updateFonts(fonts, "display", fontSelect);
+  updateFonts(fonts, "serif", fontSelect);
 
   const initSvg = () => {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -183,62 +176,90 @@ getGoogleFonts().then((data) => {
         break;
       }
       default:
-        console.log(e.target.value);
+        break;
     }
     drawSvg();
   };
 
-  const getBase64Font = async (fontFamily) => {
-    const response = await fetch(
-      `https://fonts.googleapis.com/css?family=${fontFamily
+  const getFontRule = (rule) => {
+    const src =
+      rule.style.getPropertyValue("src") ||
+      rule.style.cssText.match(/url\(.*?\)/g)[0];
+    if (!src) {
+      return null;
+    }
+
+    const url = src.split("url(")[1].split(")")[0];
+    return {
+      rule: rule,
+      src: src,
+      url: url.replace(/\"/g, ""),
+    };
+  };
+
+  const getFontDataURL = async (url) => {
+    const response = await fetch(url);
+    const responseBlob = await response.blob();
+    const f = new FileReader();
+    return new Promise((resolve, reject) => {
+      f.onerror = () => {
+        f.abort();
+        reject(new DOMException("Problem parsing input file."));
+      };
+
+      f.onload = () => {
+        resolve(f.result);
+      };
+      f.readAsDataURL(responseBlob);
+    });
+  };
+
+  /* Big thanks to this stackoverflow answer!!! https://stackoverflow.com/a/42405731 */
+
+  const GFontToDataURI = async (url) => {
+    const response = await fetch(url);
+    const data = await response.text();
+
+    const styles = document.createElement("style");
+    styles.innerHTML = data;
+    document.head.appendChild(styles);
+    const stylesheet = styles.sheet;
+    const ruleList = stylesheet.cssRules;
+
+    let fontRules = [];
+
+    for (let i = 0; i < ruleList.length; i += 1) {
+      fontRule = getFontRule(ruleList[i]);
+      if (fontRule) {
+        try {
+          const dataURL = await getFontDataURL(fontRule.url);
+          fontRules.push(fontRule.rule.cssText.replace(fontRule.url, dataURL));
+        } catch (e) {
+          console.warn(e.message);
+        }
+      }
+    }
+
+    document.head.removeChild(styles);
+    return fontRules;
+  };
+
+  const downloadImage = async (type) => {
+    const svg = document.querySelector("svg");
+
+    const cssRules = await GFontToDataURI(
+      `https://fonts.googleapis.com/css?family=${options.fontFamily
         .split(" ")
         .join("+")}`
     );
-    const data = await response.text();
-    const fontLinkRegex = new RegExp(
-      /(https?:\/\/(fonts\.)[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,})\w/,
-      "ig"
-    );
-    const [woff] = data.match(fontLinkRegex);
 
-    const woffResponse = await fetch(woff);
-
-    const woffData = await woffResponse.text();
-
-    const contentType = woffResponse.headers.get("Content-Type");
-
-    const base64Data = `data:${contentType};charset=utf-8;base64,${btoa(
-      unescape(encodeURIComponent(woffData))
-    )}`;
-
-    // console.log("data", data);
-    // also need the unicode-range part of data: https://lvngd.com/blog/how-embed-google-font-svg/
-    // switch to returning an object with base64 and the unicode range
-    return data.replace(woff, base64Data);
-  };
-
-  const downloadImage = async () => {
-    const svg = document.querySelector("svg");
-
-    const base64Font = await getBase64Font(options.fontFamily);
-    console.log("font", base64Font);
-
-    const defs = document.createElement("defs");
-    const style = document.createElement("style");
-    style.appendChild(document.createTextNode(base64Font));
-    // style.textContent = base64Font;
-    // style.textContent = base64Font.split("\n").join("");
+    let svgNS = "http://www.w3.org/2000/svg";
+    // so let's append it in our svg node
+    let defs = document.createElementNS(svgNS, "defs");
+    let style = document.createElementNS(svgNS, "style");
+    style.innerHTML = cssRules.join("\n");
     defs.appendChild(style);
     svg.insertBefore(defs, svg.firstChild);
-
-    /* const fontEmbedString = `
-    @font-face {
-      font-family: '${options.fontFamily}';
-      font-style: normal;
-      font-weight: 400;
-      src: url(${base64Font}) format('woff2')}`;
-
-    console.log(fontEmbedString);*/
 
     // get svg data
     const svgData = new XMLSerializer().serializeToString(svg);
@@ -249,61 +270,50 @@ getGoogleFonts().then((data) => {
     const svgImage = document.createElement("img");
     svgImage.setAttribute("src", image64);
 
-    // set it as the source of the img element
+    if (type === "svg") {
+      const link = document.createElement("a");
+      link.href = svgImage.src;
+      link.download = `${options.text.join(" ")} card`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      svgImage.onload = () => {
+        const canvas = document.createElement("canvas");
 
-    // const imageBlob = await image.blob();
-    // const imageURL = URL.createObjectURL(imageBlob);
+        const scaleFactor = window.devicePixelRatio;
 
-    // start keep
-    const link = document.createElement("a");
-    link.href = svgImage.src;
-    link.download = "card";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        canvas.width = options.width * scaleFactor;
+        canvas.height = options.height * scaleFactor;
 
-    svgImage.onload = () => {
-      const canvas = document.querySelector("canvas");
+        canvas.style.width = `${options.width}px`;
 
-      const scaleFactor = window.devicePixelRatio;
+        const context = canvas.getContext("2d");
+        // draw image in canvas starting left-0 , top - 0
+        context.drawImage(
+          svgImage,
+          0,
+          0,
+          options.width * scaleFactor,
+          options.height * scaleFactor
+        );
 
-      canvas.width = options.width * scaleFactor;
-      canvas.height = options.height * scaleFactor;
-
-      canvas.style.width = `${options.width}px`;
-
-      const context = canvas.getContext("2d");
-      // draw image in canvas starting left-0 , top - 0
-      context.drawImage(
-        svgImage,
-        0,
-        0,
-        options.width * scaleFactor,
-        options.height * scaleFactor
-      );
-
-      document.body.appendChild(svgImage);
-
-      const jpeg = canvas.toDataURL("image/jpeg", 1.0);
-      const canvaslink = document.createElement("a");
-      canvaslink.download = "card from canvas";
-      document.body.appendChild(canvaslink);
-      canvaslink.href = jpeg;
-      canvaslink.click();
-      canvaslink.remove();
-    };
-
-    //end keep
-
-    //currently it downloads as an svg without the google font
-    //goal: download as a jpeg with the text as an image in the correct font
-    //the best option still seems like drawing the image to a canvas
-    //possible???
+        const jpeg = canvas.toDataURL("image/jpeg", 1.0);
+        const canvaslink = document.createElement("a");
+        canvaslink.download = `${options.text.join(" ")} card`;
+        document.body.appendChild(canvaslink);
+        canvaslink.href = jpeg;
+        canvaslink.click();
+        canvaslink.remove();
+      };
+    }
   };
 
   inputs.forEach((input) => input.addEventListener("change", updateSvg));
-  const downloadButton = document.querySelector(".download");
-  downloadButton.addEventListener("click", downloadImage);
+  const downloadSVGButton = document.querySelector(".download-svg");
+  downloadSVGButton.addEventListener("click", () => downloadImage("svg"));
+  const downloadJPGButton = document.querySelector(".download-jpg");
+  downloadJPGButton.addEventListener("click", () => downloadImage("jpg"));
 });
 
 getTopFontsByCategory = (category) => {
