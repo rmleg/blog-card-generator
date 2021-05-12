@@ -6,10 +6,11 @@
  * TODO for future:
  * accessibility guidelines/hints re contrast, alt text
  */
+const GOOGLE_FONTS_API_KEY = process.env.GOOGLE_FONTS_API_KEY;
 
 const getGoogleFonts = async () => {
   const results = await fetch(
-    "https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=AIzaSyCTch8lhPKYVPNhRCi9US9P1TO8ra-c7zc"
+    `https://www.googleapis.com/webfonts/v1/webfonts?sort=popularity&key=${GOOGLE_FONTS_API_KEY}`
   );
   return await results.json();
 };
