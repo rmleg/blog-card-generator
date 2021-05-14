@@ -12,23 +12,18 @@ try {
   console.error(err);
 }
 
-try {
-  const html = fs.readFileSync("src/index.html", "utf8");
-  fs.writeFileSync("build/index.html", html, "utf8");
-} catch (err) {
-  console.error(err);
-}
+const filenames = fs.readdirSync("src");
 
-try {
-  const js = fs.readFileSync("src/scripts.js", "utf8");
-  const builtJs = js.replace(
-    "process.env.GOOGLE_FONTS_API_KEY",
-    `"${process.env.GOOGLE_FONTS_API_KEY}"`
-  );
-  fs.writeFileSync("build/scripts.js", builtJs, "utf8");
-} catch (err) {
-  console.error(err);
-}
+filenames.forEach((filename) => {
+  let file = fs.readFileSync(`src/${filename}`, "utf8");
+  if (filename === "scripts.js") {
+    file = file.replace(
+      "process.env.GOOGLE_FONTS_API_KEY",
+      `"${process.env.GOOGLE_FONTS_API_KEY}"`
+    );
+  }
+  fs.writeFileSync(`build/${filename}`, file, "utf8");
+});
 
 const file = new static.Server(`${__dirname}/build`);
 

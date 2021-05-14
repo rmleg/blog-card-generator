@@ -1,6 +1,4 @@
 /**TODO for MVP:
- * env variable
- * DELETE old api key, get a new one (because I committed it lol)
  * design
  *
  * TODO for future:
