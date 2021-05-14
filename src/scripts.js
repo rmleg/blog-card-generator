@@ -19,11 +19,6 @@ const updateFonts = (fonts, fontType, element) => {
   links.forEach((link) => link.remove());
   element.innerHTML = "";
 
-  // re-add legend
-  const legend = document.createElement("legend");
-  legend.textContent = "Font family";
-  element.appendChild(legend);
-
   // create and add new links and radios
   fonts[fontType]?.forEach((font) => {
     // create links for head
@@ -37,6 +32,7 @@ const updateFonts = (fonts, fontType, element) => {
     document.head.appendChild(link);
 
     // create radio buttons for form
+    const div = document.createElement("div");
     const radio = document.createElement("input");
     radio.type = "radio";
     radio.name = "font-family";
@@ -53,8 +49,9 @@ const updateFonts = (fonts, fontType, element) => {
     );
     label.textContent = font.family;
     label.style.fontFamily = font.family;
-    element.appendChild(radio);
-    element.appendChild(label);
+    div.appendChild(radio);
+    div.appendChild(label);
+    element.appendChild(div);
   });
 };
 
@@ -63,7 +60,7 @@ getGoogleFonts().then((data) => {
   const svgContainer = document.querySelector(".svg");
 
   const inputs = document.querySelectorAll("input, textarea");
-  const fontSelect = document.querySelector(".font-family-radios");
+  const fontSelect = document.querySelector(".font-family-radios__container");
 
   fontSelect.addEventListener("change", (e) => {
     if (e.target.value) {
