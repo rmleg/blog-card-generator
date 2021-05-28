@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/rmleg/blog-card-generator#readme",
   "devDependencies": {
+    "jest": "^27.0.1",
     "parcel-bundler": "^1.12.5"
   },
   "dependencies": {
