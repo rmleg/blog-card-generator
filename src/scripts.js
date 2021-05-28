@@ -1,5 +1,7 @@
 /**TODO for MVP:
  * design
+ * pull out node stuff
+ * figure out deploying to netlify with parcel
  *
  * TODO for future:
  * accessibility guidelines/hints re contrast, alt text
