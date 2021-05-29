@@ -4,8 +4,8 @@
   "description": "Generate a blog header card",
   "main": "scripts.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "parcel src/index.html",
+    "test": "jest --watchAll",
+    "start": "parcel src/index.html",
     "build": "parcel build src/index.html"
   },
   "repository": {
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/rmleg/blog-card-generator#readme",
   "devDependencies": {
+    "@babel/preset-env": "^7.14.4",
     "jest": "^27.0.1",
     "parcel-bundler": "^1.12.5"
   },
