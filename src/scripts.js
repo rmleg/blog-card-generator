@@ -25,7 +25,7 @@ export const getTopFontsByCategory = (allFonts, category) => {
     .slice(0, 25);
 };
 
-const updateFonts = (fonts, fontType, element) => {
+export const updateFonts = (fonts, fontType, element) => {
   // clear old links and radios
   const links = document.head.querySelectorAll("link[data-type=font]");
   links.forEach((link) => link.remove());
@@ -50,8 +50,7 @@ const updateFonts = (fonts, fontType, element) => {
     radio.name = "font-family";
     radio.value = font.family;
     radio.id = `font-family-${font.family.split(" ").join("-")}`;
-    if (element.childElementCount === 1) {
-      // if only a legend exists in the fieldset, this is the first radio
+    if (element.childElementCount === 0) {
       radio.checked = true;
     }
     const label = document.createElement("label");
