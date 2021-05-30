@@ -3,7 +3,6 @@
  */
 
 import { initSvg } from "../scripts";
-import { screen } from "@testing-library/dom";
 
 test("initSvg should create an svg with the specified width and height", () => {
   const svg = initSvg({ width: 300, height: 300 });

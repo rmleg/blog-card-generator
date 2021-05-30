@@ -14,6 +14,14 @@ const fonts = {
   display: getTopFontsByCategory(GoogleFontsResponse.items, "display"),
 };
 
+test("updateFonts should create 25 link elements", () => {
+  document.body.innerHTML = `
+      <div data-testid="radio-button-container"></div>
+    `;
+  updateFonts(fonts, "serif", screen.getByTestId("radio-button-container"));
+  expect(document.querySelectorAll("link[data-type=font]").length).toBe(25);
+});
+
 test("updateFonts should create 25 radio buttons", () => {
   document.body.innerHTML = `
       <div data-testid="radio-button-container"></div>
