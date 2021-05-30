@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Generate a Blog Header</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Generate a Text Card</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main>
+      <h1>Generate a Text Card</h1>
       <div class="svg"></div>
       <section class="inputs">
-        <button type="button" class="download-jpg">Download Card as JPG</button>
-        <button type="button" class="download-svg">Download Card as SVG</button>
+        <div class="button-container">
+          <button type="button" class="download-jpg">
+            Download Card as JPG
+          </button>
+          <button type="button" class="download-svg">
+            Download Card as SVG
+          </button>
+        </div>
         <fieldset>
           <legend>Settings for Your Card</legend>
           <fieldset class="font-types">
@@ -62,7 +71,9 @@
           </fieldset>
 
           <fieldset class="font-family-radios">
-            <!-- font families dynamicall added here-->
+            <legend>Font family</legend>
+            <div class="font-family-radios__container"
+            <!-- font families dynamically added here-->
           </fieldset>
 
           <div>

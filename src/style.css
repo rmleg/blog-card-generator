@@ -1,0 +1,33 @@
+h1 {
+  text-align: center;
+}
+
+svg {
+  display: block;
+  margin: 0 auto;
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.font-family-radios__container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.5em;
+  align-items: center;
+}
+
+.inputs {
+  width: 600px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.button-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
